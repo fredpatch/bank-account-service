@@ -1,19 +1,27 @@
 package org.sid.bankaccountservice.web;
 
+import org.sid.bankaccountservice.dto.BankAccountRequestDTO;
+import org.sid.bankaccountservice.dto.BankAccountResponseDTO;
 import org.sid.bankaccountservice.entities.BankAccount;
+import org.sid.bankaccountservice.mapper.AccountMapper;
 import org.sid.bankaccountservice.repositories.BankAccountRepository;
+import org.sid.bankaccountservice.service.AccountService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
+@RequestMapping("/api")
 public class AccountRestController {
+
+    private AccountService accountService;
     private final BankAccountRepository bankAccountRepository;
+    private AccountMapper accountMapper;
 
     //For the services
-    public AccountRestController(BankAccountRepository bankAccountRepository) {
+    public AccountRestController(AccountService accountService, BankAccountRepository bankAccountRepository) {
+        this.accountService = accountService;
         this.bankAccountRepository = bankAccountRepository;
     }
 
@@ -33,11 +41,9 @@ public class AccountRestController {
     }
 
     @PostMapping("/bankAccounts")
-    public BankAccount save(@RequestBody BankAccount bankAccount){
-        if(bankAccount.getId()==null)bankAccount.setId(UUID.randomUUID().toString());
-        if (bankAccount.getCreation_date()==null)bankAccount.setCreation_date(new Date());
+    public BankAccountResponseDTO save(@RequestBody BankAccountRequestDTO RequestDTO){
 
-        return bankAccountRepository.save(bankAccount);
+        return accountService.addAccount(RequestDTO);
     }
 
     //Update existing account by id
